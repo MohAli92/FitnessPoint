@@ -1,0 +1,28 @@
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📧 REGISTERED USERS DATA
+📅 Exported: 1/16/2026, 11:34:05 AM
+👥 Total Users: 2
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 User #1:
+   👤 Username: Ali
+   📧 Email: maanouh@gmail.com
+   🎂 Age: 34
+   ⚥ Gender: male
+   📏 Height: 179 cm
+   ⚖️  Weight: 125 kg
+   🏃 Activity: light
+   🎯 Goal: lose
+   📅 Created: 1/15/2026, 10:22:27 AM
+
+📋 User #2:
+   👤 Username: Alii
+   📧 Email: maanouh@yahoo.com
+   🎂 Age: 34
+   ⚥ Gender: male
+   📏 Height: 180 cm
+   ⚖️  Weight: 129.9 kg
+   🏃 Activity: sedentary
+   🎯 Goal: lose
+   📅 Created: 1/16/2026, 9:33:10 AM
+

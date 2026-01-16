@@ -1,0 +1,12 @@
+{
+  "ports": {
+    "3000": {
+      "visibility": "public",
+      "label": "Frontend (React)"
+    },
+    "5000": {
+      "visibility": "public",
+      "label": "Backend (API)"
+    }
+  }
+}

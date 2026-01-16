@@ -1,0 +1,39 @@
+{
+  "name": "FitnessPoint Development",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-20-bullseye",
+  
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
+
+  "postCreateCommand": "npm run install-all",
+
+  "forwardPorts": [3000, 5000],
+  "portsAttributes": {
+    "3000": {
+      "label": "Frontend (React)",
+      "onAutoForward": "notify",
+      "visibility": "public"
+    },
+    "5000": {
+      "label": "Backend API",
+      "onAutoForward": "notify",
+      "visibility": "public"
+    }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-typescript-next"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  },
+
+  "remoteUser": "node"
+}
