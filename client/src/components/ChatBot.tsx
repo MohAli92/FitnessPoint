@@ -38,13 +38,11 @@ const languageTexts = {
 
 const ChatBot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState<Language | null>(() => {
-    const saved = localStorage.getItem('chatbot-language');
-    return (saved as Language) || null;
-  });
+  const [selectedLanguage, setSelectedLanguage] = useState<Language | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isWaitingForLanguage, setIsWaitingForLanguage] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -60,34 +58,44 @@ const ChatBot: React.FC = () => {
     if (isOpen && inputRef.current) {
       inputRef.current.focus();
     }
-  }, [isOpen]);
-
-  useEffect(() => {
-    if (selectedLanguage && messages.length === 0) {
-      const welcomeMessage: Message = {
-        id: 1,
-        text: languageTexts[selectedLanguage].welcome,
+    // Ask for language automatically when opening if no language selected
+    if (isOpen && !selectedLanguage && messages.length === 0) {
+      setIsWaitingForLanguage(true);
+      const languageQuestion: Message = {
+        id: Date.now(),
+        text: 'Hello! 👋\n\nWhich language do you prefer? / Welche Sprache bevorzugen Sie? / أي لغة تفضّل؟\n\nPlease choose:\n1️⃣ English\n2️⃣ Deutsch (German)\n3️⃣ العربية (Arabic)\n\nOr click the buttons below ⬇️',
         sender: 'bot',
         timestamp: new Date()
       };
-      setMessages([welcomeMessage]);
+      setMessages([languageQuestion]);
     }
-  }, [selectedLanguage]);
+  }, [isOpen, selectedLanguage, messages.length]);
+
+  // Reset language and messages when closing ChatBot
+  useEffect(() => {
+    if (!isOpen) {
+      setSelectedLanguage(null);
+      setMessages([]);
+      setIsWaitingForLanguage(false);
+      setInputMessage('');
+    }
+  }, [isOpen]);
 
   const selectLanguage = (lang: Language) => {
     setSelectedLanguage(lang);
+    setIsWaitingForLanguage(false);
     localStorage.setItem('chatbot-language', lang);
     const welcomeMessage: Message = {
-      id: 1,
+      id: Date.now(),
       text: languageTexts[lang].welcome,
       sender: 'bot',
       timestamp: new Date()
     };
-    setMessages([welcomeMessage]);
+    setMessages(prev => [...prev, welcomeMessage]);
   };
 
   const sendMessage = async () => {
-    if (!inputMessage.trim() || isLoading || !selectedLanguage) return;
+    if (!inputMessage.trim() || isLoading) return;
 
     const userMessage: Message = {
       id: Date.now(),
@@ -97,12 +105,54 @@ const ChatBot: React.FC = () => {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const currentMessage = inputMessage;
     setInputMessage('');
     setIsLoading(true);
 
     try {
+      // If no language selected, show language selection message
+      if (!selectedLanguage) {
+        setIsWaitingForLanguage(true);
+        const languageQuestion: Message = {
+          id: Date.now() + 1,
+          text: 'Hello! 👋\n\nWhich language do you prefer? / Welche Sprache bevorzugen Sie? / أي لغة تفضّل؟\n\nPlease choose:\n1️⃣ English\n2️⃣ Deutsch (German)\n3️⃣ العربية (Arabic)\n\nOr click the buttons below ⬇️',
+          sender: 'bot',
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, languageQuestion]);
+        setIsLoading(false);
+        return;
+      }
+
+      // Check if user is selecting language
+      const lowerMessage = currentMessage.toLowerCase().trim();
+      if (isWaitingForLanguage || lowerMessage === '1' || lowerMessage === 'english' || 
+          lowerMessage === '2' || lowerMessage === 'deutsch' || lowerMessage === 'german' ||
+          lowerMessage === '3' || lowerMessage === 'عربي' || lowerMessage === 'arabic' || lowerMessage === 'العربية') {
+        if (lowerMessage === '1' || lowerMessage === 'english') {
+          selectLanguage('en');
+        } else if (lowerMessage === '2' || lowerMessage === 'deutsch' || lowerMessage === 'german') {
+          selectLanguage('de');
+        } else if (lowerMessage === '3' || lowerMessage === 'عربي' || lowerMessage === 'arabic' || lowerMessage === 'العربية') {
+          selectLanguage('ar');
+        } else {
+          // If unclear, ask again
+          setIsWaitingForLanguage(true);
+          const askAgain: Message = {
+            id: Date.now() + 1,
+            text: 'Please choose a language:\n\n1️⃣ English\n2️⃣ Deutsch (German)\n3️⃣ العربية (Arabic)\n\nOr click the buttons below ⬇️',
+            sender: 'bot',
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, askAgain]);
+        }
+        setIsLoading(false);
+        return;
+      }
+
+      // Normal message with selected language
       const response = await axios.post(`${API_URL}/chatbot`, {
-        message: inputMessage,
+        message: currentMessage,
         language: selectedLanguage
       });
 
@@ -116,9 +166,10 @@ const ChatBot: React.FC = () => {
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
       console.error('ChatBot error:', error);
+      const errorText = selectedLanguage ? languageTexts[selectedLanguage].error : 'Sorry, an error occurred. Please try again.';
       const errorMessage: Message = {
         id: Date.now() + 1,
-        text: languageTexts[selectedLanguage].error,
+        text: errorText,
         sender: 'bot',
         timestamp: new Date()
       };
@@ -140,7 +191,7 @@ const ChatBot: React.FC = () => {
       {/* Chat Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 z-50 bg-primary-600 hover:bg-primary-700 text-white rounded-full p-4 shadow-lg transition-all duration-300 hover:scale-110"
+        className="fixed bottom-6 right-6 z-[9998] bg-primary-600 hover:bg-primary-700 text-white rounded-full p-4 shadow-lg transition-all duration-300 hover:scale-110"
         aria-label="Open ChatBot"
       >
         {isOpen ? (
@@ -152,7 +203,7 @@ const ChatBot: React.FC = () => {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 z-50 w-96 h-[600px] bg-white rounded-lg shadow-2xl flex flex-col border border-gray-200">
+        <div className="fixed bottom-24 right-6 z-[9999] w-96 h-[600px] max-h-[80vh] bg-white rounded-lg shadow-2xl flex flex-col border border-gray-200">
           {/* Header */}
           <div className="bg-primary-600 text-white p-4 rounded-t-lg flex justify-between items-center">
             <div className="flex items-center">
@@ -169,30 +220,30 @@ const ChatBot: React.FC = () => {
             </button>
           </div>
 
-          {/* Language Selection */}
-          {!selectedLanguage && (
+          {/* Language Selection Buttons (shown when waiting for language) */}
+          {isWaitingForLanguage && (
             <div className="p-4 bg-gray-50 border-b border-gray-200">
-              <p className="text-sm text-gray-700 mb-3 text-center">
-                {languageTexts.en.selectLanguage}
+              <p className="text-sm text-gray-700 mb-3 text-center font-medium">
+                Choose your language / اختر لغتك / Wählen Sie Ihre Sprache
               </p>
               <div className="flex space-x-2">
                 <button
-                  onClick={() => selectLanguage('ar')}
-                  className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium"
-                >
-                  العربية
-                </button>
-                <button
                   onClick={() => selectLanguage('en')}
-                  className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium"
+                  className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium text-sm"
                 >
                   English
                 </button>
                 <button
                   onClick={() => selectLanguage('de')}
-                  className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium"
+                  className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium text-sm"
                 >
                   Deutsch
+                </button>
+                <button
+                  onClick={() => selectLanguage('ar')}
+                  className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium text-sm"
+                >
+                  العربية
                 </button>
               </div>
             </div>
@@ -218,9 +269,10 @@ const ChatBot: React.FC = () => {
                       message.sender === 'user' ? 'text-primary-100' : 'text-gray-500'
                     }`}
                   >
-                    {message.timestamp.toLocaleTimeString('ar-EG', {
+                    {message.timestamp.toLocaleTimeString('en-US', {
                       hour: '2-digit',
-                      minute: '2-digit'
+                      minute: '2-digit',
+                      hour12: true
                     })}
                   </span>
                 </div>
@@ -251,11 +303,11 @@ const ChatBot: React.FC = () => {
                 onKeyPress={handleKeyPress}
                 placeholder={selectedLanguage ? languageTexts[selectedLanguage].placeholder : 'Type your message...'}
                 className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                disabled={isLoading || !selectedLanguage}
+                disabled={isLoading}
               />
               <button
                 onClick={sendMessage}
-                disabled={!inputMessage.trim() || isLoading || !selectedLanguage}
+                disabled={!inputMessage.trim() || isLoading}
                 className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 <PaperAirplaneIcon className="w-5 h-5" />
