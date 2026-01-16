@@ -35,18 +35,23 @@ router.post('/register', async (req, res) => {
     const userId = result.lastID;
     const token = jwt.sign({ userId }, JWT_SECRET, { expiresIn: '7d' });
 
+    // Get created user with created_at
+    const newUser: any = await dbGet('SELECT id, username, email, age, gender, height, weight, activity_level, goal, created_at, last_login FROM users WHERE id = ?', [userId]);
+
     res.status(201).json({
       token,
       user: {
-        id: userId,
-        username,
-        email,
-        age,
-        gender,
-        height,
-        weight,
-        activity_level,
-        goal
+        id: newUser.id,
+        username: newUser.username,
+        email: newUser.email,
+        age: newUser.age,
+        gender: newUser.gender,
+        height: newUser.height,
+        weight: newUser.weight,
+        activity_level: newUser.activity_level,
+        goal: newUser.goal,
+        created_at: newUser.created_at,
+        last_login: newUser.last_login
       }
     });
   } catch (error: any) {
@@ -79,20 +84,28 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
+    // Update last login
+    await dbRun('UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?', [user.id]);
+
     const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '7d' });
+
+    // Get updated user with last_login
+    const updatedUser: any = await dbGet('SELECT id, username, email, age, gender, height, weight, activity_level, goal, created_at, last_login FROM users WHERE id = ?', [user.id]);
 
     res.json({
       token,
       user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        age: user.age,
-        gender: user.gender,
-        height: user.height,
-        weight: user.weight,
-        activity_level: user.activity_level,
-        goal: user.goal
+        id: updatedUser.id,
+        username: updatedUser.username,
+        email: updatedUser.email,
+        age: updatedUser.age,
+        gender: updatedUser.gender,
+        height: updatedUser.height,
+        weight: updatedUser.weight,
+        activity_level: updatedUser.activity_level,
+        goal: updatedUser.goal,
+        created_at: updatedUser.created_at,
+        last_login: updatedUser.last_login
       }
     });
   } catch (error: any) {

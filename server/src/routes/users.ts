@@ -8,7 +8,7 @@ const router = express.Router();
 // Get current user profile
 router.get('/me', authenticateToken, async (req: AuthRequest, res) => {
   try {
-    const user: any = await dbGet('SELECT id, username, email, age, gender, height, weight, activity_level, goal, created_at FROM users WHERE id = ?', [req.userId]);
+    const user: any = await dbGet('SELECT id, username, email, age, gender, height, weight, activity_level, goal, created_at, last_login FROM users WHERE id = ?', [req.userId]);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }

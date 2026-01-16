@@ -176,10 +176,18 @@ export const initDatabase = async () => {
         weight REAL,
         activity_level TEXT,
         goal TEXT,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        last_login DATETIME
       )
     `);
     console.log('✅ Users table created/verified');
+    
+    // Add last_login column if it doesn't exist (for existing databases)
+    try {
+      await dbRun('ALTER TABLE users ADD COLUMN last_login DATETIME');
+    } catch (e: any) {
+      // Column might already exist, ignore error
+    }
 
     // Posts table
     await dbRun(`

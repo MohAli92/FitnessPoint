@@ -12,6 +12,8 @@ interface User {
   weight?: number;
   activity_level?: string;
   goal?: string;
+  created_at?: string;
+  last_login?: string | null;
 }
 
 interface AuthContextType {

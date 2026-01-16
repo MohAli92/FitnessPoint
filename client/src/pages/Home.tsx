@@ -21,6 +21,9 @@ const Home: React.FC = () => {
   const [posts, setPosts] = useState<PostData[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+  
+  // Check if this is first login
+  const isFirstLogin = user?.last_login === null || user?.last_login === undefined;
 
   useEffect(() => {
     fetchPosts();
@@ -61,10 +64,14 @@ const Home: React.FC = () => {
     <div className="max-w-4xl mx-auto py-8 px-4">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Welcome back, {user?.username}!
+          {isFirstLogin 
+            ? `Welcome to FitnessPoint, ${user?.username}!` 
+            : `Welcome back, ${user?.username}!`}
         </h1>
         <p className="text-gray-600">
-          Share your fitness journey and encourage others on their path to a healthier lifestyle.
+          {isFirstLogin 
+            ? "Welcome! We're excited to have you here. Share your fitness journey and encourage others on their path to a healthier lifestyle."
+            : "Share your fitness journey and encourage others on their path to a healthier lifestyle."}
         </p>
       </div>
 
