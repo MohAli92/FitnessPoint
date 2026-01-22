@@ -178,6 +178,11 @@ The application uses SQLite with the following tables:
 - `follows` - User follow relationships
 - `foods` - Food database with nutritional information and dietary tags
 
-## License
 
-MIT
+
+## Contact
+
+## *Project Team*
+- Mohamed Sadik
+- Mohamed Nouh
+- Hesham Elmogy
