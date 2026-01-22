@@ -2,6 +2,83 @@
 
 A comprehensive fitness awareness website with social features, calorie calculator, personalized food suggestions, and fitness tips and exercises.
 
+## Quick Start
+
+### Prerequisites
+- Node.js (v14 or higher)
+- npm or yarn
+
+### GitHub Codespaces Setup (Easiest!)
+
+When you open this project in GitHub Codespaces:
+
+1. **⚠️ Important: Make backend port PUBLIC FIRST** - Go to the **Ports** tab and change port 5000 (backend) visibility from **Private** to **Public**. This is required for the frontend to communicate with the backend.
+
+2. **Start the entire application with one command**:
+   ```bash
+   npm start
+   ```
+   - Run this command from the project root **only**
+   - This starts both backend (port 5000) and frontend (port 3000) together
+   - Dependencies will install automatically if this is your first time
+   - That's it! No other commands needed.
+
+3. **Access the application**:
+   - Click on the "Frontend (React)" port notification or go to the Ports tab
+   - The frontend will automatically connect to the backend using the correct Codespace URL
+
+### Local Development Setup
+
+#### Installation
+
+1. Install all dependencies (root, server, and client):
+   ```bash
+   npm run install-all
+   ```
+
+2. Start the development servers:
+   ```bash
+   npm start
+   ```
+   - Run this command from the project root **only**
+   - This starts both backend (port 5000) and frontend (port 3000) together
+   - Open http://localhost:3000 in your browser
+
+#### Manual Setup (Alternative)
+
+If you prefer to set up manually:
+
+1. Install root dependencies:
+   ```bash
+   npm install
+   ```
+
+2. Install server dependencies:
+   ```bash
+   cd server
+   npm install
+   cd ..
+   ```
+
+3. Install client dependencies:
+   ```bash
+   cd client
+   npm install
+   cd ..
+   ```
+
+4. Start the backend server:
+   ```bash
+   cd server
+   npm run dev
+   ```
+
+5. In a new terminal, start the frontend:
+   ```bash
+   cd client
+   npm start
+   ```
+
 ## Features
 
 - **User Authentication**: Secure registration and login system with JWT tokens
@@ -30,85 +107,6 @@ A comprehensive fitness awareness website with social features, calorie calculat
 - Heroicons for icons
 
 ## Getting Started
-
-### Prerequisites
-- Node.js (v14 or higher)
-- npm or yarn
-
-### GitHub Codespaces Setup (Automatic)
-
-When you open this project in GitHub Codespaces:
-
-1. **Dependencies are installed automatically** - All required packages (root, server, and client) will be installed automatically when the container is created.
-
-2. **Ports are forwarded automatically** - Ports 3000 (Frontend) and 5000 (Backend) are automatically forwarded and accessible via public URLs.
-
-3. **API URL is detected automatically** - The frontend automatically detects the Codespace environment and connects to the backend using the correct external URL. No manual configuration needed!
-
-4. **Start the servers**:
-   ```bash
-   npm run dev
-   ```
-   - Run this command from the project root (not inside `client` or `server`)
-   - No need to run `npm start` manually; `npm run dev` starts both backend (5000) and frontend (3000) together
-
-5. **Access the application**:
-   - Click on the "Frontend (React)" port notification or go to the Ports tab
-   - The frontend will automatically connect to the backend using the correct Codespace URL
-   - No need to manually configure any URLs!
-
-### Local Development Setup
-
-### Installation
-
-1. Install all dependencies (root, server, and client):
-```bash
-npm run install-all
-```
-
-2. Start the development servers:
-```bash
-npm run dev
-```
-   - Run this command from the project root (not inside `client` or `server`)
-   - No need to run `npm start` manually; `npm run dev` starts both backend (5000) and frontend (3000) together
-
-This will start both the backend server (port 5000) and the frontend development server (port 3000).
-
-### Manual Setup (Alternative)
-
-If you prefer to set up manually:
-
-1. Install root dependencies:
-```bash
-npm install
-```
-
-2. Install server dependencies:
-```bash
-cd server
-npm install
-cd ..
-```
-
-3. Install client dependencies:
-```bash
-cd client
-npm install
-cd ..
-```
-
-4. Start the backend server:
-```bash
-cd server
-npm run dev
-```
-
-5. In a new terminal, start the frontend:
-```bash
-cd client
-npm start
-```
 
 ## Environment Variables
 
