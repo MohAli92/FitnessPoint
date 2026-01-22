@@ -38,7 +38,7 @@ When you open this project in GitHub Codespaces:
 
 2. Start the development servers:
    ```bash
-   npm start
+   npm run dev
    ```
    - Run this command from the project root **only**
    - This starts both backend (port 5000) and frontend (port 3000) together
